@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+
 using System.Linq;
 using UnityEngine;
 using QPath;
@@ -22,6 +23,11 @@ public class Hex : IQPathTile {
 
         this.units = new HashSet<Unit>();
         this.ContainsCity = false;
+        this.HexResources = new Dictionary<RESOURCES, int>();
+        this.HexResources[RESOURCES.GOLD] = 0;
+        this.HexResources[RESOURCES.PROD] = 0;
+        this.HexResources[RESOURCES.FOOD] = 0;
+        this.HexResources[RESOURCES.MANA] = 0;
     }
 
     public HexMap HexMap;
@@ -69,8 +75,12 @@ public class Hex : IQPathTile {
     public ELEVATION_TYPE ElevationType { get; set; }
     public FEATURE_TYPE FeatureType { get; set; }
 
+    // Hex Resources
 
-
+    public enum RESOURCES { GOLD, FOOD, PROD, MANA, CULTURE, SCIENCE, FAITH }
+    public Dictionary<RESOURCES, int> HexResources { get; set; }
+    
+    
     // Need to add more variables to store other hex data
     // Terrain type, resources, road, city, features, etc...
 

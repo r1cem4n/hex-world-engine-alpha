@@ -27,6 +27,7 @@ public class City : MapObject {
    
 
     public List<Hex> OwnedHexes { get; protected set; }
+    public List<Hex> HexesWorked { get; protected set; }
 
 
     public enum BuildingType {
@@ -41,7 +42,14 @@ public class City : MapObject {
     public BuildingType Buildings;
     public BuildingType BuildingsAvailable;
 
+
+
     BuildQueueItem buildJob;
+
+
+    //
+    // Hex Ownership
+    //
 
     public void TakeOwnershipOfHex ( Hex hex ) {
 
@@ -60,20 +68,39 @@ public class City : MapObject {
     } 
     public void TakeOwnershipOfHex () {
         if (OwnedHexes == null) {
+            // It is likely that this function is being ran for the first time, so let's take ownership of the tile we're on and it's neighbors
             OwnedHexes = new List<Hex>();
+            TakeOwnershipOfHex( this.Hex ); 
             TakeOwnershipOfHex( Hex.GetNeighboringHexes() );
         } else {
             Debug.Log("Improper use of City::TakeOwnershipOfHex() !!!");
+            // want to change this eventually
         }
     }
 
     public void RemoveOwnershipOfHex ( Hex h ) {
         if (OwnedHexes.Contains(h)) {
             OwnedHexes.Remove( h );
+            h.IsOwned = false;
             Debug.Log("City lost ownership of hex!");
         }
     }
 
+    //
+    // Buildings
+    //
+    // Maybe implement buildings as a list of function delegates that contain very simple equations and algorithms ??
+
+    public void AddBuilding( BuildingType b ) {
+        // check if building is already built, then add it to built items list (??)
+
+        // this will be ran when build jobs complete 
+    }
+    public void RemoveBuilding( BuildingType b ) {
+        // check if building is already built, then remove it from built items list (??)
+    }
+
+    // Turn Stuff
     public void DoTurn() {
         // Check build queue, go back to build selection if not ready
 

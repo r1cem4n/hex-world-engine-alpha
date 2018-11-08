@@ -219,6 +219,8 @@ public class HexMap : MonoBehaviour, IQPathWorld {
     }
 
     //
+    Dictionary<Hex.FEATURE_TYPE, List<Hex>> HexesByFeatureType = new Dictionary<Hex.FEATURE_TYPE, List<Hex>>();
+
     public void UpdateHexVisuals()
     {
         for (int column = 0; column < numColumns; column++) {
@@ -239,20 +241,28 @@ public class HexMap : MonoBehaviour, IQPathWorld {
                     if (h.Moisture >= MoistureMarsh) { 
                         mr.material = MatMarsh; 
                         h.FeatureType = Hex.FEATURE_TYPE.MARSH;
+                        HexesByFeatureType[Hex.FEATURE_TYPE.MARSH].Add( h );
+                        h.HexResources[Hex.RESOURCES.MANA] += 1;
                         
                     } else if (h.Moisture >= MoistureJungle) {
                         mr.material = MatForest; 
                         h.FeatureType = Hex.FEATURE_TYPE.JUNGLE;
+                        HexesByFeatureType[Hex.FEATURE_TYPE.JUNGLE].Add( h );
+                        h.HexResources[Hex.RESOURCES.PROD] += 1;
                         //Spawn Trees
                         GameObject.Instantiate(ForestPrefab, hexGO.transform.position, Quaternion.identity, hexGO.transform);
                     } else if (h.Moisture >= MoistureForest) {
                         mr.material = MatForest; 
                         h.FeatureType = Hex.FEATURE_TYPE.FOREST;
+                        HexesByFeatureType[Hex.FEATURE_TYPE.FOREST].Add( h );
+                        h.HexResources[Hex.RESOURCES.GOLD] += 1;
                         //Spawn Trees
                         GameObject.Instantiate(ForestPrefab, hexGO.transform.position, Quaternion.identity, hexGO.transform);
                     } else if (h.Moisture >= MoistureGrassland) {
                         mr.material = MatGrassland; 
                         h.FeatureType = Hex.FEATURE_TYPE.GRASSLAND;
+                        HexesByFeatureType[Hex.FEATURE_TYPE.GRASSLAND].Add( h );
+                        h.HexResources[Hex.RESOURCES.FOOD] += 2;
                     } else {
                         mr.material = MatArid; 
                         
@@ -270,6 +280,7 @@ public class HexMap : MonoBehaviour, IQPathWorld {
                     // Set To hill mesh & material
                     h.ElevationType = Hex.ELEVATION_TYPE.HILLS;
                     mf.mesh = MeshHill; 
+                    h.HexResources[Hex.RESOURCES.PROD] += 1;
                     
                 }
                 else if (h.Elevation < ElevationHills && h.Elevation >= ElevationShore) {
@@ -282,7 +293,7 @@ public class HexMap : MonoBehaviour, IQPathWorld {
                     h.ElevationType = Hex.ELEVATION_TYPE.FLAT;
                     mr.material = MatShore;
                     mf.mesh = MeshFlat; 
-                    
+                    h.HexResources[Hex.RESOURCES.GOLD] += 1;
                 }
 
                 if ( h.Elevation < 0f ) {
@@ -291,7 +302,7 @@ public class HexMap : MonoBehaviour, IQPathWorld {
                     if (h.Elevation > ElevationLake) { 
                         mr.material = MatLake;
                         h.ElevationType = Hex.ELEVATION_TYPE.LAKE;
-
+                        if (h.Moisture > 0.75f) { h.HexResources[Hex.RESOURCES.FOOD] += 1; }
                         
                     } else {
                         mr.material = MatOcean; 
@@ -301,16 +312,28 @@ public class HexMap : MonoBehaviour, IQPathWorld {
                 }
 
 
-
+                // Calculate hex GPT, PPT, FPT
+                
                 // hex debug label
-
-                // hexGO.GetComponentInChildren<TextMesh>().text = h.Elevation.ToString("0.00");
-                // hexGO.GetComponentInChildren<TextMesh>().text = h.BaseMovementCost().ToString("0.00");
                 hexGO.GetComponentInChildren<TextMesh>().text = "  ";
             }
         }
 
     }
+
+    //
+
+    
+
+    public void SpawnSpecialResources() {
+        // Sort hexes into lists by type
+        /* foreach (Hex h in hexes.Where(h => h.FeatureType != Hex.FEATURE_TYPE.NONE) ) {
+
+        } */ 
+
+        // Pick random few hexes from corresponding lists for different bonus resources
+    }
+
     public Hex[] GetHexesWithinRangeOf(Hex centerHex, int range)
     {
         List<Hex> results = new List<Hex>();
